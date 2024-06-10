@@ -1,0 +1,13 @@
+.map_container {
+    height: 100vh;
+    width: 100vh;
+}
+
+.parkMap{
+    width: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    justify-self: center;
+}

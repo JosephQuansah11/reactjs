@@ -1,0 +1,22 @@
+.attraction {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    flex-direction: row;
+}
+
+.attraction_image{
+    background: pink;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.attraction_container {
+    background-color: grey;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
+}

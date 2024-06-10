@@ -1,11 +1,17 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, IconButton, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
-import { blueGrey } from '@mui/material/colors';
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Navigation } from './components/Navigation.tsx';
 import SecurityContextProvider from './security/contextProviders/SecurityContextProvider.tsx';
 import SettingsContextProvider from './security/contextProviders/SettingsContextProvider.tsx';
+import { ShowTicketTypes } from './components/tickets/TicketTypes.tsx';
+import RouteGuard from './components/RouteGuard.tsx';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ShowTicketForm } from './components/tickets/TicketForm.tsx';
+import { ShowTicketInfo } from './components/tickets/TicketInfo.tsx';
+import ShowPark from './components/parks/ShowPark.tsx';
+import ParkMap from './components/parks/ParkMap.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -27,14 +33,8 @@ const Header = ({ onOpenDrawer }: HeaderProps) => (
 // Navigation is a component from the Navigation file
 const Nav = ({ setDrawerOpen, drawerOpen }: { setDrawerOpen: (value: boolean) => void, drawerOpen: boolean }) => (
     <nav>
-        <SettingsContextProvider>
-            <SecurityContextProvider>
-                <BrowserRouter>
                     <Header onOpenDrawer={() => setDrawerOpen(!drawerOpen)} />
                     <Navigation isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
-                </BrowserRouter>
-            </SecurityContextProvider>
-        </SettingsContextProvider>
     </nav>
 )
 // here is the end of the navigation bar code
@@ -50,33 +50,39 @@ const Footer = () => (
 
 // here is the end of the footer code
 
-// body theme
-const theme = createTheme({
-    palette: {
-        primary: blueGrey,
-        secondary: {
-            main: 'rgba(241, 248, 253, 1)',
-        },
-    },
-})
-// end of body theme
+
+const queryClient = new QueryClient()
+
+
 
 export function Home() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
 
     return (
-        <ThemeProvider theme={theme}>
-            <Nav setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
-            <h1>Welcome to React Tech-Topia</h1>
-            <p>Check our the various tickets to the park of your choice </p>
-            <body>
-                <main>
-                this shows tickets
-                </main>
-            </body>
-            <footer>
-                <Footer />
-            </footer>
-        </ThemeProvider >
-    )
+        <SettingsContextProvider>
+            <SecurityContextProvider>
+                <BrowserRouter>
+                    <Nav setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
+                    <div>
+                        <h1>Welcome to React Tech-Topia</h1>
+                        <p>Check out the various ticket types to the park of your choice</p>
+                    </div>
+                    <main>
+                        <QueryClientProvider client={queryClient}>
+                            <Routes>
+                                <Route path='/' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                <Route path="/purchase-form/:ticket_type" element={<RouteGuard component={<ShowTicketForm />} />} />
+                                <Route path='/ticket_info/:id/ticket' element={<RouteGuard component={<ShowTicketInfo />} />} />
+                                <Route path='/parks' element={<RouteGuard component={<ShowPark />} />} />
+                                <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
+                            </Routes>
+                        </QueryClientProvider>
+                    </main>
+                    <footer>
+                        <Footer />
+                    </footer>
+                </BrowserRouter>
+            </SecurityContextProvider>
+        </SettingsContextProvider>
+                )
 }
