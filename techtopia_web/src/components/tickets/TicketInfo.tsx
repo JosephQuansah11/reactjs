@@ -5,6 +5,7 @@ import { useTicket } from "../../hooks/TicketHook";
 export function ShowTicketInfo(){
     const params  = useParams();
     const ticket = useTicket(params.id);
+    const username = params.username;
     const navigate = useNavigate();
     return (
         <div>
@@ -17,7 +18,7 @@ export function ShowTicketInfo(){
                     </tr>
                     <tr>
                         <th>Ticket user</th>
-                        <td>{ticket.ticket?.username}</td>
+                        <td>{username}</td>
                     </tr>
                     <tr>
                         <th>Ticket valid start date</th>

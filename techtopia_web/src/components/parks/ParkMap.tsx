@@ -70,8 +70,8 @@ export default function ParkMap() {
                         alt=""
                         style={{
                             position: 'absolute',
-                            top: `${positionY}rem`,
-                            left: `${positionX}rem`,
+                            top: `${positionY}`,
+                            left: `${positionX}`,
                             width: `${width}`,
                             height: `${height}`
                         }}

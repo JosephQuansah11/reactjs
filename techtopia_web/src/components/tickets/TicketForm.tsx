@@ -80,7 +80,7 @@ export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDi
         const ticketId = await scanTicket(type.ticket_type);
         reset();
         onClose();
-        navigate(`/ticket_info/${ticketId}/ticket`);
+        navigate(`/ticket_info/${ticketId}/ticket/${formData.username}`);
     }, [onSubmit, type.ticket_type, reset, onClose, navigate]);
 
     return (

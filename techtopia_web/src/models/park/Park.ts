@@ -4,5 +4,5 @@ export interface Park{
     name: string;
     id: string;
     image: string;
-    attractions: Attraction[];
+    parkAttractions: Attraction[];
 }

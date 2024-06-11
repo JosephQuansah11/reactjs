@@ -12,6 +12,7 @@ import { ShowTicketForm } from './components/tickets/TicketForm.tsx';
 import { ShowTicketInfo } from './components/tickets/TicketInfo.tsx';
 import ShowPark from './components/parks/ShowPark.tsx';
 import ParkMap from './components/parks/ParkMap.tsx';
+import { ShowAllParkAttractions, ShowParkAttraction } from './components/parks/ShowParkAttractions.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -71,10 +72,14 @@ export function Home() {
                         <QueryClientProvider client={queryClient}>
                             <Routes>
                                 <Route path='/' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                <Route path='/settings' element={<RouteGuard component={<ShowPark />} />} />
+                                <Route path='/about' element={<RouteGuard component={<ShowPark />} />} />
                                 <Route path="/purchase-form/:ticket_type" element={<RouteGuard component={<ShowTicketForm />} />} />
-                                <Route path='/ticket_info/:id/ticket' element={<RouteGuard component={<ShowTicketInfo />} />} />
+                                <Route path='/ticket_info/:id/ticket/:username' element={<RouteGuard component={<ShowTicketInfo />} />} />
                                 <Route path='/parks' element={<RouteGuard component={<ShowPark />} />} />
                                 <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
+                                <Route path='/attractions/:id' element={<RouteGuard component={<ShowParkAttraction />} />} />
+                                <Route path='/attractions' element={<RouteGuard component={<ShowAllParkAttractions />} />} />
                             </Routes>
                         </QueryClientProvider>
                     </main>
