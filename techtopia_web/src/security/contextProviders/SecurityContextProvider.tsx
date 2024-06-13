@@ -21,7 +21,7 @@ function logout() {
 }
 
 
-export default function SecurityContextProvider({ children }: IWithChildren) {
+export default function SecurityContextProvider({ children }: Readonly<IWithChildren>) {
     const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined)
 
 

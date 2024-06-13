@@ -7,30 +7,32 @@ import {
 } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { AttractionData } from '../../models/park/Attraction.ts'
+import { AttractionFormData } from '../../models/park/Attraction.ts'
 import { DialogAttractionContent } from './DialogAttractionContent'
+import { useCallback /* useState */ } from 'react'
+// import { useQueryClient, useMutation } from '@tanstack/react-query'
+// import Loader from '../Loader.tsx'
 
 interface ItemDialogProps {
     isOpen: boolean
-    onSubmit: (item: AttractionData) => void
+    onSubmit: (attraction: AttractionFormData) => void
     onClose: () => void
 }
 
-const itemSchema: z.ZodType<AttractionData> = z.object({
+const itemSchema: z.ZodType<AttractionFormData> = z.object({
     name: z.string().min(2, 'name must be at least 2 characters'),
     image: z.string().url(),
     positionX: z.string(),
     positionY: z.string(),
-    parkAttractionId: z.number()
+    parkID: z.string(),
 })
 
-export function AddAttractionDialog({ isOpen, onSubmit, onClose }: ItemDialogProps) {
+export function AddAttractionDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialogProps>) {
     const {
-        handleSubmit,
         reset,
         control,
         formState: { errors },
-    } = useForm<AttractionData>({
+    } = useForm<AttractionFormData>({
         resolver: zodResolver(itemSchema),
         defaultValues: {
             name: 'my attraction',
@@ -40,16 +42,28 @@ export function AddAttractionDialog({ isOpen, onSubmit, onClose }: ItemDialogPro
         },
     });
 
-    const handleFormSubmit = (data: AttractionData) => {
+    const handleFormSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         console.log('Render AddItemDialog');
-        onSubmit(data);
-        onClose();
+        const data = new FormData(event.currentTarget);
+        const formData = Object.fromEntries(data.entries());
+        const attractionData = {
+            name: formData.name,
+            image: formData.image,
+            positionX: formData.positionX+"px",
+            positionY: formData.positionY+"px",
+            parkID: formData.parkID,
+        };
+        onSubmit(attractionData as unknown as AttractionFormData);
+        event.currentTarget.reset();
         reset();
-    };
+        onClose();
+    }, [onSubmit,  reset, onClose]);
+
 
     return (
         <Dialog open={isOpen} onClose={onClose}>
-            <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+            <form onSubmit={handleFormSubmit} noValidate  style={{ margin: 'auto' }} method='post'>
                 <DialogTitle>Add Attraction</DialogTitle>
                 <DialogAttractionContent control={control} errors={errors} name={''} label={''} />
                 <DialogActionsToDisplay onClose={onClose} reset={reset} />

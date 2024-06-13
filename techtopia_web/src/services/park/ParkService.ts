@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Attraction } from '../../models/park/Attraction';
+import { Attraction, AttractionFormData } from '../../models/park/Attraction';
 import { Park } from '../../models/park/Park';
 
 const base_url = `http://localhost:8092/park_api`
@@ -21,8 +21,8 @@ export async function getParks(){
 }
 
 
-export function addParkAndAttraction(attraction: Omit<Attraction, 'id'>){
+export function addParkAndAttraction(attraction: Omit<AttractionFormData, 'parkAttractionId'>){
     console.log(attraction)// left with this
     //TODO check if this is working!
-    return axios.post(`${base_url}/add_attraction`, attraction);
+    return axios.post(`${base_url}/add_attraction`, [attraction]);
 }

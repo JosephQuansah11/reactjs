@@ -6,18 +6,18 @@ import {
 } from '@mui/material';
 
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { AttractionData } from '../../models/park/Attraction';
+import { AttractionData, AttractionFormData } from '../../models/park/Attraction';
 
 
 interface FormInputProps {
-    control: Control<AttractionData>;
+    control: Control<AttractionFormData>;
     name: string;
     label: string;
     multiline?: boolean;
     defaultValue?: string;
     fullWidth?: boolean;
     disabled?: boolean;
-    errors?: FieldErrors<AttractionData>
+    errors?: FieldErrors<AttractionFormData>
 }
 
 

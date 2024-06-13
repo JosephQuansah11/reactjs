@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Park } from "../models/park/Park";
 import { addParkAndAttraction, getAttraction, getParkAttractions, getParks } from "../services/park/ParkService";
-import { Attraction } from "../models/park/Attraction";
+import {  AttractionFormData } from "../models/park/Attraction";
 
 // This function is used to fetch data with useQuery from the api endpoint
 export function useAttractionsFromParkId(parkId: string) {
@@ -57,27 +57,33 @@ export function useParks() {
 }
 
 
-
-export function useParkAttractions(parkId: string) {
+export function useAddParkAttractions(){
     const queryClient = useQueryClient()
-    const { isLoading, isError, attractions } = useAttractionsFromParkId(parkId)
 
     const {
         mutate: addItem,
         isLoading: isAddingItem,
         isError: isErrorAddingItem,
-    } = useMutation((attraction: Omit<Attraction, 'id'>) =>  addParkAndAttraction(attraction ), {
+    } = useMutation((attraction: Omit<AttractionFormData, 'id'>) =>  addParkAndAttraction(attraction ), {
         onSuccess: () => {
             queryClient.invalidateQueries(['attractions'])
         },
     })
 
     return {
-        isLoading,
-        isError,
-        attractions,
         addItem,
         isAddingItem,
         isErrorAddingItem,
+    }
+}
+
+
+export function useParkAttractions(parkId: string) {
+    const { isLoading, isError, attractions } = useAttractionsFromParkId(parkId)
+
+    return {
+        isLoading,
+        isError,
+        attractions
     }
 }

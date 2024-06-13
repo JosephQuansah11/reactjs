@@ -3,20 +3,21 @@ import { Link, useParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import { Alert, Box, Fab } from "@mui/material";
 import { useState } from 'react';
+import { useAddParkAttractions, useParkAttractions } from '../../hooks/ParkHook';
 import parkGate from '../../images/park-electric-gates.png';
-import { useParkAttractions } from '../../hooks/ParkHook';
+import Loader from '../Loader';
 import { AddAttractionDialog } from './AddAttractionForm';
 import { CustomedMap } from './CustomedMap';
-import Loader from '../Loader';
 import './Map.css';
 export default function ParkMap() {
     const width = '5rem';
-    const height = '5rem';
+    const height = '4rem';
 
     const { id } = useParams()
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     //  see https://github.com/remix-run/react-router/issues/8200#issuecomment-962520661
-    const { isLoading, isError, attractions, addItem, isAddingItem, isErrorAddingItem } = useParkAttractions(id!)
+    const { isLoading, isError, attractions } = useParkAttractions(id!)
+    const { addItem, isAddingItem, isErrorAddingItem } = useAddParkAttractions();
     if (isLoading) return <Loader>We're loading your board</Loader>
 
     if (isAddingItem) return <Loader>We're creating your attraction</Loader>
@@ -25,11 +26,10 @@ export default function ParkMap() {
         return <Alert severity="error">Oops, we were unable to create your attraction.</Alert>
     }
 
-    if (isError || !attractions) {
+    if (isError) {
         return <Alert severity="error">Board could not be loaded</Alert>
     }
 
-    console.log(id)
 
     return (
         <Box sx={{ position: 'relative' }}>
@@ -55,8 +55,8 @@ export default function ParkMap() {
                     height: `${height}`
                 }}
             />
-            {attractions.map(({
-                parkAttractionId: parkAttractionId,
+            {attractions?.map(({
+                parkAttractionId,
                 image,
                 positionX,
                 positionY
