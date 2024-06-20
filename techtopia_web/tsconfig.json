@@ -13,6 +13,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+  
 
     /* Linting */
     "strict": true,
@@ -21,5 +22,21 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testMatch": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"]
+  }
 }
+

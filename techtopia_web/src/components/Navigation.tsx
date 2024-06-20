@@ -18,10 +18,11 @@ export function Navigation({ isOpen, onClose }: NavigationProps) {
             <Drawer open={isOpen} onClose={onClose}>
                 <List sx={{ width: 250 }}>
                     {[
-                        { label: 'Parks', link: '/', icon: <BoardsIcon /> },
+                        { label: 'Tickets', link: '/', icon: <BoardsIcon /> },
                         { label: 'Settings', link: '/settings', icon: <SettingsIcon /> },
                         { label: 'About', link: '/about', icon: <AboutIcon /> },
-                        { label: 'Attractions', link: '/attractions', icon: <BoardsIcon /> }
+                        { label: 'Attractions', link: '/attractions', icon: <BoardsIcon /> },
+                        { label: 'Create Park', link: '/attractions', icon: <BoardsIcon /> }
                     ].map((menuItem) => (
                         <ListItem disableGutters key={menuItem.link}>
                             <ListItemButton component={Link} to={menuItem.link} onClick={onClose}>

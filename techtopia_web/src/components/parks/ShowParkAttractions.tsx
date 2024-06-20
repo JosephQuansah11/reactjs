@@ -130,9 +130,7 @@ function SearchAttractions() {
     useEffect(() => {
         parks.map(park => {
             const filteredAttractions = park.parkAttractions.filter(attraction => attraction.name.toLowerCase().includes(searchQuery.toLowerCase()));
-            console.log(filteredAttractions);
             setMapId(filteredAttractions[0]?.parkID)
-            console.log(mapId)
         })
     }, [searchQuery, parks, mapId])
 

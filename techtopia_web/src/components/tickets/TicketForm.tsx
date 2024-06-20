@@ -39,7 +39,8 @@ const ticketSchema: z.ZodType<TicketFormData> = z.object({
     ticketType: z.string(),
     formTicketId: z.string(),
     validityStartDate: z.string(),
-    validityEndDate: z.string()
+    validityEndDate: z.string(),
+    price: z.number()
 })
 
 
@@ -54,7 +55,7 @@ interface FormInputProps {
 
 
 export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDialogProps>) {
-
+ const { ticket_type } = useParams();
     const {
         reset,
         control,
@@ -64,7 +65,8 @@ export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDi
         defaultValues: {
             username: '',
             children: '',
-            grandparents: ''
+            grandparents: '',
+            price: ticket_type! ==='SINGLE_DAY_PASS'?20:30,
         },
     });
 
@@ -75,7 +77,7 @@ export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDi
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const formData = Object.fromEntries(data.entries());
-        onSubmit(formData as TicketFormData);
+        onSubmit(formData as unknown as  TicketFormData);
         event.currentTarget.reset();
         const ticketId = await scanTicket(type.ticket_type);
         reset();
@@ -112,7 +114,8 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
     const ticketUserData = [
         { name: 'username', label: 'username', error: !!errors?.username, helperText: errors?.username?.message },
         { name: 'children', label: 'children', error: !!errors?.children, helperText: errors?.children?.message },
-        { name: 'grandparents', label: 'grandparents', error: !!errors?.grandparents, helperText: errors?.grandparents?.message }
+        { name: 'grandparents', label: 'grandparents', error: !!errors?.grandparents, helperText: errors?.grandparents?.message },
+        { name: 'price', label: 'price', error: !!errors?.price, helperText: errors?.price?.message }
     ];
 
 

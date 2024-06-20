@@ -3,7 +3,8 @@ export type Ticket ={
     ticketType: string,
     validityEndDate:string,
     validityStartDate:string,
-    username:string
+    username:string,
+    price: number
 }
 
 export type TicketForm = {
@@ -15,6 +16,7 @@ export type TicketForm = {
     grandparents: string;
     validityStartDate: string;
     validityEndDate: string;
+    price: number;
 };
 
 export type TicketFormData = Omit <TicketForm, 'id'>;

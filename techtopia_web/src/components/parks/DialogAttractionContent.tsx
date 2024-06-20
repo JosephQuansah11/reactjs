@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { AttractionData, AttractionFormData } from '../../models/park/Attraction';
+import {  AttractionFormData } from '../../models/park/Attraction';
 
 
 interface FormInputProps {
@@ -33,7 +33,7 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
     return (itemData.map((item) => (
         <Controller
             key={item.name}
-            name={item.name as keyof AttractionData}
+            name={item.name as keyof AttractionFormData}
             control={control}
             render={({ field }) => (
                 <TextField

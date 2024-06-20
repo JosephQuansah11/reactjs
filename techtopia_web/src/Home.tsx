@@ -1,8 +1,7 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, IconButton, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Navigation } from './components/Navigation.tsx';
 import SecurityContextProvider from './security/contextProviders/SecurityContextProvider.tsx';
 import SettingsContextProvider from './security/contextProviders/SettingsContextProvider.tsx';
 import { ShowTicketTypes } from './components/tickets/TicketTypes.tsx';
@@ -13,6 +12,9 @@ import { ShowTicketInfo } from './components/tickets/TicketInfo.tsx';
 import ShowPark from './components/parks/ShowPark.tsx';
 import ParkMap from './components/parks/ParkMap.tsx';
 import { ShowAllParkAttractions, ShowParkAttraction } from './components/parks/ShowParkAttractions.tsx';
+import { FoundTheme } from './components/Settings.tsx';
+import { Navigation } from './components/Navigation.tsx';
+import Settings from './components/Settings.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -34,8 +36,8 @@ const Header = ({ onOpenDrawer }: HeaderProps) => (
 // Navigation is a component from the Navigation file
 const Nav = ({ setDrawerOpen, drawerOpen }: { setDrawerOpen: (value: boolean) => void, drawerOpen: boolean }) => (
     <nav>
-                    <Header onOpenDrawer={() => setDrawerOpen(!drawerOpen)} />
-                    <Navigation isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+        <Header onOpenDrawer={() => setDrawerOpen(!drawerOpen)} />
+        <Navigation isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </nav>
 )
 // here is the end of the navigation bar code
@@ -56,38 +58,44 @@ const queryClient = new QueryClient()
 
 
 
+
+
 export function Home() {
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-
+    const storedTheme = localStorage.getItem('theme');
+    const themeObject = storedTheme ? JSON.parse(storedTheme) : FoundTheme;
+    const someTheme = createTheme(themeObject);
     return (
-        <SettingsContextProvider>
-            <SecurityContextProvider>
-                <BrowserRouter>
-                    <Nav setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
-                    <div>
-                        <h1>Welcome to React Tech-Topia</h1>
-                        <p>Check out the various ticket types to the park of your choice</p>
-                    </div>
-                    <main>
-                        <QueryClientProvider client={queryClient}>
-                            <Routes>
-                                <Route path='/' element={<RouteGuard component={<ShowTicketTypes />} />} />
-                                <Route path='/settings' element={<RouteGuard component={<ShowPark />} />} />
-                                <Route path='/about' element={<RouteGuard component={<ShowPark />} />} />
-                                <Route path="/purchase-form/:ticket_type" element={<RouteGuard component={<ShowTicketForm />} />} />
-                                <Route path='/ticket_info/:id/ticket/:username' element={<RouteGuard component={<ShowTicketInfo />} />} />
-                                <Route path='/parks' element={<RouteGuard component={<ShowPark />} />} />
-                                <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
-                                <Route path='/attractions/:id' element={<RouteGuard component={<ShowParkAttraction />} />} />
-                                <Route path='/attractions' element={<RouteGuard component={<ShowAllParkAttractions />} />} />
-                            </Routes>
-                        </QueryClientProvider>
-                    </main>
-                    <footer>
-                        <Footer />
-                    </footer>
-                </BrowserRouter>
-            </SecurityContextProvider>
-        </SettingsContextProvider>
-                )
+        <ThemeProvider theme={someTheme}>
+            <SettingsContextProvider>
+                <SecurityContextProvider>
+                    <BrowserRouter>
+                        <Nav setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
+                        <div>
+                            <h1>Welcome to React TechTopia</h1>
+                            <p>Check out the various ticket types to the park of your choice</p>
+                        </div>
+                        <main>
+                            <QueryClientProvider client={queryClient}>
+                                <Routes>
+                                    <Route path='/' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                    <Route path='/settings' element={<RouteGuard component={<Settings />} />} />
+                                    <Route path='/about' element={<RouteGuard component={<ShowPark />} />} />
+                                    <Route path="/purchase-form/:ticket_type" element={<RouteGuard component={<ShowTicketForm />} />} />
+                                    <Route path='/ticket_info/:id/ticket/:username' element={<RouteGuard component={<ShowTicketInfo />} />} />
+                                    <Route path='/parks' element={<RouteGuard component={<ShowPark />} />} />
+                                    <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
+                                    <Route path='/attractions/:id' element={<RouteGuard component={<ShowParkAttraction />} />} />
+                                    <Route path='/attractions' element={<RouteGuard component={<ShowAllParkAttractions />} />} />
+                                </Routes>
+                            </QueryClientProvider>
+                        </main>
+                        <footer>
+                            <Footer />
+                        </footer>
+                    </BrowserRouter>
+                </SecurityContextProvider>
+            </SettingsContextProvider>
+        </ThemeProvider>
+    )
 }
