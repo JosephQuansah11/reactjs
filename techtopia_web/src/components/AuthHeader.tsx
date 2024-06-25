@@ -4,16 +4,17 @@ import { useContext } from 'react'
 import SecurityContext from '../security/contexts/SecurityContexts.ts'
 
 export function AuthHeader() {
-    const { isAuthenticated, logout, loggedInUser } = useContext(SecurityContext)
+    const { isAuthenticated, logout, loggedInUser, roles } = useContext(SecurityContext)
     return (
         <Stack direction="row" alignItems="center" spacing={2} flexWrap="wrap" sx={{ mt: 3, ml: 3 }}>
             {isAuthenticated() && (
-                <>
-                    <Typography>Hello {loggedInUser}</Typography>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                    <p>{roles}</p>
+                    <Typography>{loggedInUser}</Typography>
                     <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }} onClick={logout}>
                         Log out
                     </Button>
-                </>
+                </div>
             )}
         </Stack>
     )

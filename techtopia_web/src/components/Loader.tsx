@@ -15,7 +15,6 @@ export default function Loader({ children }: LoaderProps) {
                 textAlign: 'center',
                 justifyContent: 'center',
                 alignItems: 'center',
-                background: 'blue',
                 fontSize: '0.85rem',
                 margin: '0',
                 padding: '0'

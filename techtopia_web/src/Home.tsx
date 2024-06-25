@@ -15,6 +15,7 @@ import { ShowAllParkAttractions, ShowParkAttraction } from './components/parks/S
 import { FoundTheme } from './components/Settings.tsx';
 import { Navigation } from './components/Navigation.tsx';
 import Settings from './components/Settings.tsx';
+import { CreateParkForm } from './components/parks/CreateParkForm.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -87,6 +88,7 @@ export function Home() {
                                     <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
                                     <Route path='/attractions/:id' element={<RouteGuard component={<ShowParkAttraction />} />} />
                                     <Route path='/attractions' element={<RouteGuard component={<ShowAllParkAttractions />} />} />
+                                    <Route path='/create-park' element={<RouteGuard component={< CreateParkForm/>} />} />
                                 </Routes>
                             </QueryClientProvider>
                         </main>

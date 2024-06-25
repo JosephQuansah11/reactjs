@@ -20,7 +20,7 @@ const defaultTheme = createTheme({
         },
         text: {
             primary: '#ffffff', // White color for text
-            secondary: '#0000ff', // Blue color for secondary text
+            secondary: '#42a5f5', // Blue color for secondary text
         },
         contrastThreshold: 4.5,
     },

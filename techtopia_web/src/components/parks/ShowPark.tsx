@@ -37,23 +37,17 @@ export function ShowPark() {
         );
     }
     return (
-        console.log(parks[0].image),
         <div style={{
             width: '100%',
-            height: '80%',
+            height: '100%',
             display: 'flex',
-            flexDirection: 'column',
-            textAlign: 'center',
+            fontSize: '0.75rem',
+            justifySelf: 'center',
             justifyContent: 'center',
-            alignItems: 'center',
-            background: 'blue',
-            fontSize: '0.85rem',
-            margin: '0',
-            padding: '0'
         }} className="parks">
             {parks.map(({ id: id, name, image }) => (
                 <Card
-                    sx={{ width: 350, m: 1, backgroundColor: "#f5f5f5" }}
+                    sx={{ width: '30rem', margin: '0.5rem', backgroundColor: "primary" }}
                     key={id}
                     onClick={() => navigate(`/map/${id}`)}
                 >

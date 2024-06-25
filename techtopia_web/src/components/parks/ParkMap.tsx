@@ -32,7 +32,7 @@ export default function ParkMap() {
 
 
     return (
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={{ position: 'relative', width:'100%', height: '60vh', display:'flex', alignItems: 'center', justifyContent: 'center' }}>
             <AddAttractionDialog
                 isOpen={isDialogOpen}
                 onSubmit={(attraction) => {
@@ -43,7 +43,7 @@ export default function ParkMap() {
                 }}
                 onClose={() => setIsDialogOpen(false)}
             />
-            <CustomedMap />
+            <CustomedMap  />
             <img
                 src={parkGate}
                 alt="parkGate"
@@ -84,7 +84,7 @@ export default function ParkMap() {
                 size="large"
                 color="secondary"
                 aria-label="add"
-                style={{ position: 'absolute', left: '1rem', bottom: '-1rem' }}
+                style={{ position: 'absolute', left: '1rem', bottom: '10rem' }}
                 onClick={() => setIsDialogOpen(true)}
             >
                 <AddIcon />

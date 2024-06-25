@@ -4,10 +4,12 @@ export interface ISecurityContext {
     isAuthenticated: () => boolean
     loggedInUser: string | undefined
     logout: () => void
+    roles: string | undefined
 }
 
 export default createContext<ISecurityContext>({
     isAuthenticated: () => false,
     loggedInUser: undefined,
     logout: () => {},
+    roles: undefined,
 })

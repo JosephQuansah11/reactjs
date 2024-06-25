@@ -27,3 +27,4 @@ export async function printTicket(ticket: TicketFormData){
     console.log(ticket.formTicketId)
     return response.data
 }
+
