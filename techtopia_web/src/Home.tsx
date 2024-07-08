@@ -16,6 +16,7 @@ import { FoundTheme } from './components/Settings.tsx';
 import { Navigation } from './components/Navigation.tsx';
 import Settings from './components/Settings.tsx';
 import { CreateParkForm } from './components/parks/CreateParkForm.tsx';
+import { TicketAgent } from './components/parks/TicketAgent.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -79,12 +80,13 @@ export function Home() {
                         <main>
                             <QueryClientProvider client={queryClient}>
                                 <Routes>
-                                    <Route path='/' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                    <Route path='/park/:id/tickets' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                    <Route path='/park/:id/tickets/:ticket_agent' element={<RouteGuard component={<ShowTicketTypes />} />} />
                                     <Route path='/settings' element={<RouteGuard component={<Settings />} />} />
-                                    <Route path='/about' element={<RouteGuard component={<ShowPark />} />} />
-                                    <Route path="/purchase-form/:ticket_type" element={<RouteGuard component={<ShowTicketForm />} />} />
+                                    <Route path='/about/:id' element={<RouteGuard component={<TicketAgent />} />} />
+                                    <Route path="/park/:id/purchase-form/:ticket_type/:ticket_agent" element={<RouteGuard component={<ShowTicketForm />} />} />
                                     <Route path='/ticket_info/:id/ticket/:username' element={<RouteGuard component={<ShowTicketInfo />} />} />
-                                    <Route path='/parks' element={<RouteGuard component={<ShowPark />} />} />
+                                    <Route path='/' element={<RouteGuard component={<ShowPark />} />} />
                                     <Route path='/map/:id' element={<RouteGuard component={<ParkMap />} />} />
                                     <Route path='/attractions/:id' element={<RouteGuard component={<ShowParkAttraction />} />} />
                                     <Route path='/attractions' element={<RouteGuard component={<ShowAllParkAttractions />} />} />

@@ -49,7 +49,7 @@ export function ShowPark() {
                 <Card
                     sx={{ width: '30rem', margin: '0.5rem', backgroundColor: "primary" }}
                     key={id}
-                    onClick={() => navigate(`/map/${id}`)}
+                    onClick={() => navigate(`/about/${id}`)}
                 >
                     <CardActionArea>
                         <CardMedia

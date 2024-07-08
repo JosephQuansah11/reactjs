@@ -12,14 +12,15 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import AddIcon from '@mui/icons-material/Add';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { Control, Controller, FieldErrors, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useTickets } from '../../hooks/TicketHook';
 import { TicketFormData } from '../../models/ticket/Ticket';
-import { printTicket, scanTicket } from '../../services/ticket/TicketService';
+import { AddTicket, PrintTicket, sellTicketToGuest } from '../../services/ticket/TicketService';
 import Loader from '../Loader';
+import SecurityContext from '../../security/contexts/SecurityContexts.ts';
 
 
 interface TicketDialogProps {
@@ -55,7 +56,9 @@ interface FormInputProps {
 
 
 export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDialogProps>) {
- const { ticket_type } = useParams();
+    const { ticket_type } = useParams();
+    const { token } = useContext(SecurityContext)
+    console.log(token)
     const {
         reset,
         control,
@@ -66,24 +69,27 @@ export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDi
             username: '',
             children: '',
             grandparents: '',
-            price: ticket_type! ==='SINGLE_DAY_PASS'?20:30,
+            price: ticket_type?.toUpperCase() === 'SINGLE_DAY_PASS' ? 20 : 30,
         },
     });
 
     const navigate = useNavigate();
-    const type = useParams();
+    const params = useParams();
+    const type = params.ticket_type
+    const ticketAgentId = params.ticket_agent;
 
     const handleFormSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const formData = Object.fromEntries(data.entries());
-        onSubmit(formData as unknown as  TicketFormData);
+        onSubmit(formData as unknown as TicketFormData);
         event.currentTarget.reset();
-        const ticketId = await scanTicket(type.ticket_type);
+        const ticketId = await AddTicket(type, token);
+        await sellTicketToGuest(ticketId, ticketAgentId, token);
         reset();
         onClose();
         navigate(`/ticket_info/${ticketId}/ticket/${formData.username}`);
-    }, [onSubmit, type.ticket_type, reset, onClose, navigate]);
+    }, [onSubmit, type, reset, onClose, navigate, ticketAgentId, token]);
 
     return (
         <Dialog open={isOpen} onClose={onClose}>
@@ -150,16 +156,17 @@ export function ShowTicketForm() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const queryClient = useQueryClient()
     const { isLoading, isError, tickets } = useTickets()
+    const {token} = useContext(SecurityContext)
     const {
         mutate: addItem,
         isLoading: isAddingItem,
         isError: isErrorAddingItem,
-    } = useMutation((_ticket: TicketFormData) => printTicket(_ticket), {
+    } = useMutation((_ticket: TicketFormData) => PrintTicket(_ticket, token), {
         onSuccess: () => {
             queryClient.invalidateQueries(['tickets'])
         },
     }
-)
+    )
 
     if (isLoading) return <Loader>We're loading your board</Loader>
 
@@ -174,14 +181,15 @@ export function ShowTicketForm() {
     }
 
     return (
-        <Box sx={{width: '100vw', height: '80vh'}}>
+        <Box sx={{ width: '100vw', height: '80vh' }}>
             <AddTicketDialog
                 isOpen={isDialogOpen}
-                onSubmit={(ticket)=>{
-                    addItem({...ticket})
+                onSubmit={(ticket) => {
+                    addItem({ ...ticket })
                 }}
                 onClose={() => {
-                    setIsDialogOpen(false)}}
+                    setIsDialogOpen(false)
+                }}
             />
             <Fab
                 title="add new attraction"

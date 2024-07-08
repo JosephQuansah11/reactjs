@@ -1,12 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useTicket } from "../../hooks/TicketHook";
 
-
+//TODO: Add ticket type
 export function ShowTicketInfo(){
     const params  = useParams();
     const ticket = useTicket(params.id);
     const username = params.username;
     const navigate = useNavigate();
+    const param = useParams();
+    const id = param.id;
     return (
         <div>
             <h1>Ticket Info</h1>
@@ -30,7 +32,7 @@ export function ShowTicketInfo(){
                     </tr>
                 </tbody>
             </table>
-            <button onClick={() => navigate(`/parks`)}>Proceed</button>
+            <button onClick={() => navigate(`/map/${id}`)}>Proceed</button>
         </div>
     );
 }

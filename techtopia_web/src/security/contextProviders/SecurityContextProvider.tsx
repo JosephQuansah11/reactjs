@@ -1,9 +1,9 @@
 import Keycloak from 'keycloak-js'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { isExpired } from 'react-jwt'
-import SecurityContext from '../contexts/SecurityContexts'
 import { addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader } from '../../services/Auth'
-
+import { AddGuest } from '../../services/ticket/TicketService'
+import SecurityContext from '../contexts/SecurityContexts'
 interface IWithChildren {
     children: ReactNode
 }
@@ -32,13 +32,23 @@ function getRole() {
         }
     }
     )
-    return foundRole as string;
+    return foundRole as string | undefined;
+}
+
+function getToken(){
+    let token = ''
+    if(keycloak?.token !== undefined){
+        const tokenFound = keycloak?.token
+        token =  ''+tokenFound;
+    }
+    return token as string | undefined
 }
 
 
 export default function SecurityContextProvider({ children }: Readonly<IWithChildren>) {
     const [loggedInUser, setLoggedInUser] = useState<string | undefined>(undefined)
     const roles = getRole()
+    const token = getToken()
 
     function isAuthenticated() {
         if (keycloak.token) return !isExpired(keycloak.token);
@@ -50,7 +60,8 @@ export default function SecurityContextProvider({ children }: Readonly<IWithChil
         loggedInUser,
         logout,
         roles,
-    }), [loggedInUser, roles]);
+        token,
+    }), [loggedInUser, roles, token]);
 
 
     useEffect(() => {
@@ -62,13 +73,14 @@ export default function SecurityContextProvider({ children }: Readonly<IWithChil
                 , pkceMethod: 'S256'
             });
         }
-    }, [])
+    }, [token])
 
 
 
     keycloak.onAuthSuccess = () => {
         addAccessTokenToAuthHeader(keycloak.token)
         setLoggedInUser(keycloak.idTokenParsed?.name)
+        AddGuest(token);
     }
 
     keycloak.onAuthLogout = () => {

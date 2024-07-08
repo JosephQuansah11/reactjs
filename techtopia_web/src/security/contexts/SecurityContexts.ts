@@ -5,6 +5,7 @@ export interface ISecurityContext {
     loggedInUser: string | undefined
     logout: () => void
     roles: string | undefined
+    token: string | undefined
 }
 
 export default createContext<ISecurityContext>({
@@ -12,4 +13,5 @@ export default createContext<ISecurityContext>({
     loggedInUser: undefined,
     logout: () => {},
     roles: undefined,
+    token: undefined
 })
