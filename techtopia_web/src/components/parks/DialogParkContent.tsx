@@ -25,6 +25,7 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
     const itemData = [
         { name: 'name', label: 'Name', error: !!errors?.name, helperText: errors?.name?.message },
         { name: 'image', label: 'Image URL', error: !!errors?.image, helperText: errors?.image?.message },
+        // { name: 'gateId', label: 'Gate Id', error: !!errors?.gateId, helperText: errors?.gateId?.message },
     ];
 
 

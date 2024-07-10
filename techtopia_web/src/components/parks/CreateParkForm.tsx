@@ -13,7 +13,7 @@ import { Control, Controller, FieldErrors, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useCallback, useState} from 'react'
 import { ParkForm } from '../../models/park/Park.ts'
-import { DialogParkContent } from './DialogParkContent.tsx'
+// import { DialogParkContent } from './DialogParkContent.tsx'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import AddIcon from '@mui/icons-material/Add';
 import Loader from '../Loader.tsx'
@@ -41,7 +41,8 @@ interface ItemDialogProps {
 
 const itemSchema: z.ZodType<ParkForm> = z.object({
     name: z.string().min(2, 'name must be at least 2 characters'),
-    image: z.string().url()
+    image: z.string().url(),
+    gateId: z.string()
 })
 
 export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialogProps>) {
@@ -54,6 +55,7 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
         defaultValues: {
             name: 'my park',
             image: 'https://neural.love/cdn/ai-photostock/1ed5ffb3-f65f-62be-a38a-7d9cad96c979/0.jpg?Expires=1704067199&Signature=w1aT~1gMecwHXyA0LuBWX45o5DHs8lOs03rw2usx2NaqHoE6hIjd4GzoVUL0DhevD6nnvVzkePJIso3FQEUH9LvXimi6OpXrCCFgIvc3jxvfTELQJZ-i9cHL2eaC5cPI-hOTfofUCK0ZtguUIYuGbPQ7XikP3MVIeqNab2Q6Tp~x-kjYmBy~NDDgft0-AQE7ihyFgtq7UkQ~mguu3KXUSXYvhtAAvXxkbYL~MC2swTVGkA5Axg5agOTr6IyhyH-CqY1z~HbJrQ4~2S-NSBTluuOt~dngPsqCbQUh~lR9Qu1kT0VEnC90TB49tiId5CcNp6vgOFztOuyeDH3VKON3kg__&Key-Pair-Id=K2RFTOXRBNSROX',
+            gateId: 'undefined',
         },
     });
 
@@ -64,6 +66,7 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
         const parkData = {
             name: formData.name,
             image: formData.image,
+            gateId: formData.gateId
         };
         onSubmit(parkData as unknown as ParkForm);
         event.currentTarget.reset();
@@ -75,8 +78,8 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
     return (
         <Dialog open={isOpen} onClose={onClose}>
             <form onSubmit={handleFormSubmit} noValidate  style={{ margin: 'auto' }} method='post'>
-                <DialogTitle>Add Attraction</DialogTitle>
-                <DialogParkContent control={control} errors={errors} name={''} label={''} />
+                <DialogTitle>Add Park</DialogTitle>
+                <ShowParkFormData control={control} errors={errors} name={''} label={''} />
                 <DialogActionsToDisplay onClose={onClose} reset={reset} />
             </form>
         </Dialog>
@@ -112,6 +115,7 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
     const itemData = [
         { name: 'name', label: 'Name', error: !!errors?.name, helperText: errors?.name?.message },
         { name: 'image', label: 'Image URL', error: !!errors?.image, helperText: errors?.image?.message },
+        { name: 'gateId', label: 'Gate Id', error: !!errors?.gateId, helperText: errors?.gateId?.message },
     ];
 
 
@@ -135,9 +139,10 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
 
 export function ShowParkFormData({ control, errors, name, label }: Readonly<FormInputProps>) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', margin: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' , padding: '1.5rem', margin: 'auto' }}>
             {<GenerateControllerList control={control} errors={errors} name={name} label={label} />}
         </Box>
+
     )
 }
 
@@ -150,7 +155,7 @@ export function CreateParkForm() {
         mutate: addItem,
         isLoading: isAddingItem,
         isError: isErrorAddingItem,
-    } = useMutation((_park: ParkForm) => addPark(_park), {
+    } = useMutation((_park: ParkForm) => addPark(_park, _park.gateId), {
         onSuccess: () => {
             queryClient.invalidateQueries(['parks'])
         },

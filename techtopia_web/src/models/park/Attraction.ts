@@ -1,5 +1,5 @@
 export interface Attraction{
-    parkAttractionId: number;
+    parkAttractionId: string;
     parkID: string;
     name: string;
     image: string;

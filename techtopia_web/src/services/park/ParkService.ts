@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Attraction, AttractionFormData } from '../../models/park/Attraction';
+import { getKeycloakToken } from "../../models/CustomKeycloak.ts";
 import { Park, ParkForm } from '../../models/park/Park';
 
 const base_url = `http://localhost:8092/park_api`
@@ -20,16 +21,18 @@ export async function getParks(){
     return parks.data
 }
 
-
 export function addParkAndAttraction(attraction: Omit<AttractionFormData, 'parkAttractionId'>){
     return axios.post(`${base_url}/add_attraction`, [attraction]);
 }
 
-export function addPark(park: Omit<ParkForm, 'parkId'>){
-    return axios.post(`${base_url}/create-park`, park);
+export function addPark(park: Omit<ParkForm, 'parkId'>, gateId: string | undefined){
+    return axios.post(`${base_url}/create-park/with_gate/${gateId}`, park);
 }
 
-//TODO: implement delete park
-export function deletePark(id:string){
-    return axios.delete(`${base_url}/delete-park/${id}`);
+
+export function deleteParkAttraction(id:string,  authToken: string | undefined) {
+    const config = {
+        headers: getKeycloakToken(authToken),
+    };
+    return axios.delete(`${base_url}/parkManager/deleteAttraction/${id}`, config);
 }
