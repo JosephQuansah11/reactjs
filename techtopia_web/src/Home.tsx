@@ -80,7 +80,7 @@ export function Home() {
                         <main>
                             <QueryClientProvider client={queryClient}>
                                 <Routes>
-                                    <Route path='/park/:id/tickets' element={<RouteGuard component={<ShowTicketTypes />} />} />
+                                    {/* <Route path='/park/:id/tickets' element={<RouteGuard component={<ShowTicketTypes />} />} /> */}
                                     <Route path='/park/:id/tickets/:ticket_agent' element={<RouteGuard component={<ShowTicketTypes />} />} />
                                     <Route path='/settings' element={<RouteGuard component={<Settings />} />} />
                                     <Route path='/about/:id' element={<RouteGuard component={<TicketAgent />} />} />
