@@ -17,6 +17,7 @@ import { Navigation } from './components/Navigation.tsx';
 import Settings from './components/Settings.tsx';
 import { CreateParkForm } from './components/parks/CreateParkForm.tsx';
 import { TicketAgent } from './components/parks/TicketAgent.tsx';
+import { CreateTicketForm } from './components/tickets/CreateTicketForm.tsx';
 
 // Here is the start of the navigation bar
 type HeaderProps = {
@@ -52,14 +53,10 @@ const Footer = () => (
         <a href="https://www.kdg.be">@ Karel de Grote Hogeschool</a>
     </footer>
 )
-
 // here is the end of the footer code
 
 
 const queryClient = new QueryClient()
-
-
-
 
 
 export function Home() {
@@ -80,7 +77,7 @@ export function Home() {
                         <main>
                             <QueryClientProvider client={queryClient}>
                                 <Routes>
-                                    {/* <Route path='/park/:id/tickets' element={<RouteGuard component={<ShowTicketTypes />} />} /> */}
+                                    <Route path='/create-tickets' element={<RouteGuard component={<CreateTicketForm />} />} />
                                     <Route path='/park/:id/tickets/:ticket_agent' element={<RouteGuard component={<ShowTicketTypes />} />} />
                                     <Route path='/settings' element={<RouteGuard component={<Settings />} />} />
                                     <Route path='/about/:id' element={<RouteGuard component={<TicketAgent />} />} />

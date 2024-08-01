@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { Control, Controller, FieldErrors, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useCallback, useState} from 'react'
+import { useCallback, useState } from 'react'
 import { ParkForm } from '../../models/park/Park.ts'
 // import { DialogParkContent } from './DialogParkContent.tsx'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
@@ -19,6 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Loader from '../Loader.tsx'
 import { useParks } from '../../hooks/ParkHook.ts'
 import { addPark } from '../../services/park/ParkService.ts'
+import { useNavigate } from 'react-router-dom'
 
 
 interface FormInputProps {
@@ -72,12 +73,12 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
         event.currentTarget.reset();
         reset();
         onClose();
-    }, [onSubmit,  reset, onClose]);
+    }, [onSubmit, reset, onClose]);
 
 
     return (
         <Dialog open={isOpen} onClose={onClose}>
-            <form onSubmit={handleFormSubmit} noValidate  style={{ margin: 'auto' }} method='post'>
+            <form onSubmit={handleFormSubmit} noValidate style={{ margin: 'auto' }} method='post'>
                 <DialogTitle>Add Park</DialogTitle>
                 <ShowParkFormData control={control} errors={errors} name={''} label={''} />
                 <DialogActionsToDisplay onClose={onClose} reset={reset} />
@@ -139,7 +140,7 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
 
 export function ShowParkFormData({ control, errors, name, label }: Readonly<FormInputProps>) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' , padding: '1.5rem', margin: 'auto' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.5rem', margin: 'auto' }}>
             {<GenerateControllerList control={control} errors={errors} name={name} label={label} />}
         </Box>
 
@@ -160,7 +161,10 @@ export function CreateParkForm() {
             queryClient.invalidateQueries(['parks'])
         },
     }
-)
+    )
+
+    const navigate = useNavigate();
+
 
     if (isLoading) return <Loader>We're loading your board</Loader>
 
@@ -175,14 +179,16 @@ export function CreateParkForm() {
     }
 
     return (
-        <Box sx={{width: '100vw', height: '80vh'}}>
+        <Box sx={{ width: '100vw', height: '80vh' }}>
             <AddParkDialog
                 isOpen={isDialogOpen}
-                onSubmit={(park)=>{
-                    addItem({...park})
+                onSubmit={(park) => {
+                    addItem({ ...park })
+                    navigate('/')
                 }}
                 onClose={() => {
-                    setIsDialogOpen(false)}}
+                    setIsDialogOpen(false)
+                }}
             />
             <Fab
                 title="add new park"

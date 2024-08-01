@@ -16,7 +16,6 @@ const keycloakConfig = {
 }
 const keycloak: Keycloak = new Keycloak(keycloakConfig);
 
-console.log(keycloak.authenticated)
 
 function logout() {
     const logoutOptions = { redirectUri: import.meta.env.VITE_REACT_APP_URL }

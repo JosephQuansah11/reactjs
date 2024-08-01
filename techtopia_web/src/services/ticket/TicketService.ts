@@ -78,6 +78,20 @@ export async function AddTicket(
     return response.data;
 }
 
+export async function DeleteTicket(
+    ticket_type: string | undefined,
+    authToken: string | undefined
+) {
+    const config = {
+        headers: getKeycloakToken(authToken),
+    };
+    const response = await axios.post(
+        `http://localhost:8091/ticket_api/tickets/delete/ticket_type/${ticket_type}`,
+        config
+    );
+    return response.data;
+}
+
 export async function AddGuest(authToken: string | undefined) {
     const config = {
         headers: getKeycloakToken(authToken),
