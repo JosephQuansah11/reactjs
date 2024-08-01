@@ -8,6 +8,7 @@ interface IWithChildren {
     children: ReactNode
 }
 
+
 const keycloakConfig = {
     url: import.meta.env.VITE_KC_URL,
     realm: import.meta.env.VITE_KC_REALM,
@@ -15,11 +16,13 @@ const keycloakConfig = {
 }
 const keycloak: Keycloak = new Keycloak(keycloakConfig);
 
+console.log(keycloak.authenticated)
 
 function logout() {
     const logoutOptions = { redirectUri: import.meta.env.VITE_REACT_APP_URL }
     keycloak.logout(logoutOptions)
 }
+
 
 function getRole() {
     let foundRole = ''
@@ -28,7 +31,7 @@ function getRole() {
         keycloak.hasRealmRole(role)
         keycloak.hasResourceRole(role, import.meta.env.VITE_KC_CLIENT_ID)
         if(role === "admin"|| role === "visitor"){
-            foundRole =role
+            foundRole = role
         }
     }
     )
