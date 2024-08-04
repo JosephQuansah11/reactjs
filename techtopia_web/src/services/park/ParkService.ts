@@ -4,7 +4,6 @@ import { getKeycloakToken } from "../../models/CustomKeycloak.ts";
 import { Park, ParkForm } from '../../models/park/Park';
 
 const base_url = `http://localhost:8092/park_api`
-
 export async function getParkAttractions(id: string){
     const attractions = await axios.get<Attraction[]>(`${base_url}/${id}/attractions`);
     return attractions.data
@@ -25,8 +24,11 @@ export function addParkAndAttraction(attraction: Omit<AttractionFormData, 'parkA
     return axios.post(`${base_url}/add_attraction`, [attraction]);
 }
 
-export function addPark(park: Omit<ParkForm, 'parkId'>, gateId: string | undefined){
-    return axios.post(`${base_url}/create-park/with_gate/${gateId}`, park);
+export function addPark(park: Omit<ParkForm, 'parkId'>, entranceGateId: string | undefined, exitGateId: string | undefined, authToken: string | undefined) {
+    const config = {
+        headers: getKeycloakToken(authToken),
+    };
+    return axios.post(`${base_url}/create-park/with_gate/${entranceGateId}/${exitGateId}`, park, config);
 }
 
 

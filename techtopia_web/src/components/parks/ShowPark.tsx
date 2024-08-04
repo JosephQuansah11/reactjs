@@ -10,10 +10,22 @@ import {
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import { useParks } from "../../hooks/ParkHook";
+import SecurityContext from "../../security/contexts/SecurityContexts";
+import { useContext } from "react";
+import { employTicketAgent } from "../../services/ticket/TicketService";
+
+
+
+export function doesUserHasAccessToPark(parkId: string) {
+    return true;
+}
+
 
 export function ShowPark() {
     const { isLoading, isError, parks } = useParks();
     const navigate = useNavigate();
+    const { token, roles } = useContext(SecurityContext)
+    const isAdmin = roles === 'admin';
 
     if (isError) {
         return <Alert style={{
@@ -36,6 +48,7 @@ export function ShowPark() {
             <CircularProgress sx={{ display: "block", mt: "10em", mx: "auto" }} />
         );
     }
+
     return (
         <div style={{
             width: '100%',
@@ -49,7 +62,18 @@ export function ShowPark() {
                 <Card
                     sx={{ width: '30rem', margin: '0.5rem', backgroundColor: "primary" }}
                     key={id}
-                    onClick={() => navigate(`/about/${id}`)}
+                    onClick={() => {
+                        if (isAdmin && !doesUserHasAccessToPark(id)) navigate(`/about/${id}`) // if this is true then the ticket types.tsx file should allow purchase for ticket
+                        else if (doesUserHasAccessToPark(id)) {
+                            employTicketAgent(token).then(response => {
+                                const ticketAgentId = response;
+                                navigate(`/park/${id}/tickets/${ticketAgentId}`);
+                            }).catch(error => {
+                                console.log("Error:", error);
+                            });
+                        }
+                        else navigate(`/attractions`)
+                    }}
                 >
                     <CardActionArea>
                         <CardMedia

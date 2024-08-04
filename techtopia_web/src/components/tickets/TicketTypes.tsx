@@ -2,6 +2,8 @@ import { Alert, Card, CardActionArea, CircularProgress } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTicketTypes } from "../../hooks/TicketHook";
 
+import { doesUserHasAccessToPark } from "../parks/ShowPark";
+
 export function ShowTicketTypes() {
     const { isLoading, hasError, ticketTypes } = useTicketTypes();
     const navigate = useNavigate();
@@ -9,7 +11,7 @@ export function ShowTicketTypes() {
 
     if (hasError) {
         return (
-            <Alert severity='error'>error showing ticket types</Alert>
+            <Alert variant="filled" severity='warning' onClose={() => {}}>error showing ticket types</Alert>
         );
     }
 
@@ -19,6 +21,7 @@ export function ShowTicketTypes() {
     // replace images with actual images from ticktTypes
     const images = ['/src/images/singlepass_ticket.png', '/src/images/multipass_ticket.png'];
     const id = param.id;
+    
     const ticketAgent = param.ticket_agent;
     return (
         <div style={{ width: '100%', height: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -26,7 +29,12 @@ export function ShowTicketTypes() {
                 {ticketTypes.map((ticketType, index) => (
                     <Card key={ticketType} sx={{ height: '40%', textAlign: 'center' }}>
                         <CardActionArea sx={{ height: '90%', width: '100%', margin: 'auto', display: 'flex' }} onClick={() => {
-                            navigate(`/park/${id}/purchase-form/${ticketType}/${ticketAgent}`)
+                            if (doesUserHasAccessToPark(id)) {
+                                <Alert variant="filled" severity='warning' onClose={() => {}}>You don't have access to this park</Alert>;
+                                navigate(`/park/${id}/purchase-form/${ticketType}/${ticketAgent}`)
+                            }else{
+                                navigate(`/map/${id}`)
+                            }
                         }}>
                             <img src={`${images[index]}`} alt="" style={{ height: '95%' }} />
                         </CardActionArea>

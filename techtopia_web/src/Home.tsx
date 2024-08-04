@@ -72,7 +72,6 @@ export function Home() {
                         <Nav setDrawerOpen={setDrawerOpen} drawerOpen={drawerOpen} />
                         <div>
                             <h1>Welcome to React TechTopia</h1>
-                            <p>Check out the various ticket types to the park of your choice</p>
                         </div>
                         <main>
                             <QueryClientProvider client={queryClient}>

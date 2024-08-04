@@ -58,7 +58,6 @@ interface FormInputProps {
 export function AddTicketDialog({ isOpen, onSubmit, onClose }: Readonly<TicketDialogProps>) {
     const { ticket_type } = useParams();
     const { token } = useContext(SecurityContext)
-    console.log(token)
     const {
         reset,
         control,

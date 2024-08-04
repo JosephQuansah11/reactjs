@@ -51,7 +51,7 @@ function CreateSinglePassTickets() {
             />
             <div style={{display:"flex", flexDirection: "row", justifyContent: "space-around", width: "100%"}}>
                 <Button onClick={() => create10Tickets("single_day_pass".toUpperCase(), token)}>Create +10 Tickets</Button>
-                <Button onClick={() => remove10Tickets("multi_day_pass".toUpperCase(), token)}>Reduce -10 Tickets</Button>
+                <Button onClick={() => remove10Tickets("single_day_pass".toUpperCase(), token)}>Reduce -10 Tickets</Button>
             </div>
         </Card>
     )

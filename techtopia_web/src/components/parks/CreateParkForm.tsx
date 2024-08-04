@@ -7,19 +7,23 @@ import {
     DialogActions,
     DialogTitle,
     Fab,
+    InputLabel,
+    NativeSelect,
     TextField
 } from '@mui/material'
 import { Control, Controller, FieldErrors, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { ParkForm } from '../../models/park/Park.ts'
-// import { DialogParkContent } from './DialogParkContent.tsx'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import AddIcon from '@mui/icons-material/Add';
 import Loader from '../Loader.tsx'
 import { useParks } from '../../hooks/ParkHook.ts'
 import { addPark } from '../../services/park/ParkService.ts'
 import { useNavigate } from 'react-router-dom'
+import SecurityContext from '../../security/contexts/SecurityContexts.ts'
+import { createGate, showGates } from '../../services/gate/GateService.ts'
+import { ParkGate } from './ParkGate.ts'
 
 
 interface FormInputProps {
@@ -36,14 +40,15 @@ interface FormInputProps {
 
 interface ItemDialogProps {
     isOpen: boolean
-    onSubmit: (attraction: ParkForm) => void
+    onSubmit: (park: ParkForm) => void
     onClose: () => void
 }
 
 const itemSchema: z.ZodType<ParkForm> = z.object({
     name: z.string().min(2, 'name must be at least 2 characters'),
     image: z.string().url(),
-    gateId: z.string()
+    entranceGateId: z.string(),
+    exitGateId: z.string(),
 })
 
 export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialogProps>) {
@@ -55,8 +60,9 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
         resolver: zodResolver(itemSchema),
         defaultValues: {
             name: 'my park',
-            image: 'https://neural.love/cdn/ai-photostock/1ed5ffb3-f65f-62be-a38a-7d9cad96c979/0.jpg?Expires=1704067199&Signature=w1aT~1gMecwHXyA0LuBWX45o5DHs8lOs03rw2usx2NaqHoE6hIjd4GzoVUL0DhevD6nnvVzkePJIso3FQEUH9LvXimi6OpXrCCFgIvc3jxvfTELQJZ-i9cHL2eaC5cPI-hOTfofUCK0ZtguUIYuGbPQ7XikP3MVIeqNab2Q6Tp~x-kjYmBy~NDDgft0-AQE7ihyFgtq7UkQ~mguu3KXUSXYvhtAAvXxkbYL~MC2swTVGkA5Axg5agOTr6IyhyH-CqY1z~HbJrQ4~2S-NSBTluuOt~dngPsqCbQUh~lR9Qu1kT0VEnC90TB49tiId5CcNp6vgOFztOuyeDH3VKON3kg__&Key-Pair-Id=K2RFTOXRBNSROX',
-            gateId: 'undefined',
+            image: 'https://pics.craiyon.com/2023-10-14/0a67892f4981426d92ece30f27182f82.webp',
+            entranceGateId: '',
+            exitGateId: '',
         },
     });
 
@@ -67,7 +73,8 @@ export function AddParkDialog({ isOpen, onSubmit, onClose }: Readonly<ItemDialog
         const parkData = {
             name: formData.name,
             image: formData.image,
-            gateId: formData.gateId
+            entranceGateId: formData.entranceGateId,
+            exitGateId: formData.exitGateId
         };
         onSubmit(parkData as unknown as ParkForm);
         event.currentTarget.reset();
@@ -99,7 +106,7 @@ function DialogActionsToDisplay({ onClose, reset }: ActionsToDisplay) {
             <Button variant="outlined" onClick={onClose}>
                 Cancel
             </Button>
-            <Button type="reset" variant="outlined" onClick={() => reset()}>
+            <Button type="reset" variant="outlined" onClick={reset}>
                 Clear
             </Button>
             <Button type="submit" variant="contained">
@@ -110,13 +117,24 @@ function DialogActionsToDisplay({ onClose, reset }: ActionsToDisplay) {
 }
 
 
-
-
 function GenerateControllerList({ control, errors }: FormInputProps) {
+    const { isLoading, isError, data: gates } = useQuery(["gates"], () => showGates());
+    if (isLoading) return <p>Loading...</p>;
+    if (isError) return <p>Error</p>;
+
+    const itemFound: string[] = []
+    const exitItemFound: string[] = []
+
+    gates.forEach((gate: ParkGate) => {
+        if (gate.gateType === 'ENTRANCE') itemFound.push(gate.parkGateUUID)
+        if (gate.gateType === 'EXIT') exitItemFound.push(gate.parkGateUUID)
+    })
+
     const itemData = [
         { name: 'name', label: 'Name', error: !!errors?.name, helperText: errors?.name?.message },
         { name: 'image', label: 'Image URL', error: !!errors?.image, helperText: errors?.image?.message },
-        { name: 'gateId', label: 'Gate Id', error: !!errors?.gateId, helperText: errors?.gateId?.message },
+        { name: 'entranceGateId', label: 'Entrances', error: !!errors?.entranceGateId, helperText: errors?.entranceGateId?.message, options: itemFound },
+        { name: 'exitGateId', label: 'Exits', error: !!errors?.exitGateId, helperText: errors?.exitGateId?.message, options: exitItemFound }
     ];
 
 
@@ -126,24 +144,41 @@ function GenerateControllerList({ control, errors }: FormInputProps) {
             name={item.name as keyof ParkForm}
             control={control}
             render={({ field }) => (
-                <TextField
-                    {...field}
-                    label={item.label}
-                    error={item.error}
-                    helperText={item.helperText}
-                />
+                item.options ? (
+                    <>
+                        <InputLabel variant="standard" htmlFor="uncontrolled-native">{item.name}</InputLabel>
+                        <NativeSelect
+                            {...field}
+                        >
+                            {item.options.map((option) => (
+                                <option style={{ backgroundColor: 'black' }} key={option} value={option}>{option}</option>
+                            ))}
+                        </NativeSelect>
+                    </>
+                ) : (
+                    <TextField
+                        {...field}
+                        label={item.label}
+                        error={item.error}
+                        helperText={item.helperText}
+                    />
+                )
             )}
         />
     )))
+
 }
 
 
 export function ShowParkFormData({ control, errors, name, label }: Readonly<FormInputProps>) {
+    const { token } = useContext(SecurityContext)
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.5rem', margin: 'auto' }}>
+            <div>
+                <Button onClick={() => createGate(token)}>Create Entrance and Exit Gates For Park</Button>
+            </div>
             {<GenerateControllerList control={control} errors={errors} name={name} label={label} />}
         </Box>
-
     )
 }
 
@@ -152,11 +187,12 @@ export function CreateParkForm() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const queryClient = useQueryClient()
     const { isLoading, isError, parks } = useParks()
+    const {token} = useContext(SecurityContext)
     const {
         mutate: addItem,
         isLoading: isAddingItem,
         isError: isErrorAddingItem,
-    } = useMutation((_park: ParkForm) => addPark(_park, _park.gateId), {
+    } = useMutation((_park: ParkForm) => addPark(_park, _park.entranceGateId, _park.exitGateId, token), {
         onSuccess: () => {
             queryClient.invalidateQueries(['parks'])
         },
